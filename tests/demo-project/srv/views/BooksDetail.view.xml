@@ -1,0 +1,36 @@
+<mvc:View controllerName="be.wl.serversiderendering.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m">
+    <Page id="listpage" title="{i18n>title}">
+        <content>
+            <f:SimpleForm         editable="true"
+                layout="ResponsiveGridLayout"
+                title="Book"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="3"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="4"
+                emptySpanL="4"
+                emptySpanM="4"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="false" >
+                <f:content>
+                    <Label text="ID" />
+                    <Input value="{{ID}}" />
+                    <Label text="Title" />
+                    <Input value="{{title}}" />
+                    <Label text="Author" />
+                    <Input value="{{author}}"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,24 @@
+{
+  "name": "demo-project",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^8",
+    "express": "^4",
+    "ui5-cap-serverside-rendering-plugin": "file:../../."
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.6",
+    "@cap-js/sqlite": "^1",
+    "cds-plugin-ui5": "^0.11.1"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "workspaces": [
+    "app/*"
+  ]
+}

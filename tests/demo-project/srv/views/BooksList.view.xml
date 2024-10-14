@@ -1,0 +1,27 @@
+<mvc:View controllerName="be.wl.serversiderendering.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m">
+    <Page id="listpage" title="{i18n>title}">
+        <content>
+
+            <List
+                headerText="Books"
+                selectionChange="onSelectedBook"
+                mode="SingleSelectMaster"
+                >
+                {{#each Books}}
+                    <StandardListItem
+                        type="Active"
+                        title="{{title}} - {{ID}}"
+                        description="{{author}}">
+                        <customData>
+                            <core:CustomData key="ID" value="{{ID}}" writeToDom="true" />
+                        </customData>
+                    </StandardListItem>
+                {{/each}}
+            </List>
+
+        </content>
+    </Page>
+</mvc:View>

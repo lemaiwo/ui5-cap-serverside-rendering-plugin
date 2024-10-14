@@ -1,0 +1,33 @@
+{
+  "name": "ui5-cap-serverside-rendering-plugin",
+  "version": "1.0.0",
+  "description": "CAP Plugin to enable server side rendering in UI5",
+  "main": "cds-plugin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "index.cds",
+    "lib",
+    "srv"
+  ],
+  "keywords": [
+    "sap",
+    "cap",
+    "cds",
+    "plugin",
+    "cds-plugin",
+    "cap-plugin"
+  ],
+  "author": "Wouter Lemaire",
+  "license": "MIT",
+  "devDependencies": {
+    "@sap/cds": "^8.3.1",
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.3",
+    "handlebars": "^4.7.8"
+  },
+  "peerDependencies": {
+    "@sap/cds": ">=8"
+  }
+}
