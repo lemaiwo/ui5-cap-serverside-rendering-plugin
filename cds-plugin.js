@@ -7,7 +7,6 @@ const { Readable } = require('stream');
 
 
 globalcds.once("served", async () => {
-    console.log("hello")
     if (!("ServerSideRendering" in cds.model.definitions)) return;
 
     for (let srv of globalcds.services) {
