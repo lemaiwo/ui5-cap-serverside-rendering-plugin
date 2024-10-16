@@ -31,6 +31,7 @@ function isObjectEmpty(objectName) {
 async function getUI([results], req) {
     if (!req?.req?.url?.endsWith("/content")) return;
 
+    const validTypes = new Set(["view", "fragment"]);
     const isKeyEmpty = isObjectEmpty(results);
     const pathEntity = req.query.SELECT.from.ref[0].id;
     const entity = pathEntity.substring(pathEntity.indexOf(".") + 1);
@@ -43,10 +44,9 @@ async function getUI([results], req) {
     let templateData = {};
     isKeyEmpty ? (templateData[entity] = queryResult):([templateData] = queryResult);
 
-    const type = req.query.SELECT.from.$refLinks[0].definition["@ServerSideRenderingType"] ||"view";
+    let type = req.query.SELECT.from.$refLinks[0].definition["@ServerSideRenderingType"] ||"view";
+    !validTypes.has(type) && (type = "view");
 
-    // const filedata = fs.readFileSync(path.join(__dirname, './fragments', `${fragment}.fragment.xml`));
-    // const filedata = fs.readFileSync(`./views/${fragment}.view.xml`);
     const filedata = fs.readFileSync(path.join(globalcds.root,`./srv/${type}s`, `${fragment}.${type}.xml`));
     const template = Handlebars.compile(filedata.toString());
     const result = template(templateData);
@@ -58,8 +58,7 @@ async function getUI([results], req) {
     });
     req._.res.setHeader('Content-disposition', `attachment; ${fragment}.fragment.xml`);
     req._.res.setHeader('Content-type', 'application/xml');
-    // results.value = readableInstanceStream;
-    // return results;
+    
     if (results) {
         results.content = readableInstanceStream;
     }else{
