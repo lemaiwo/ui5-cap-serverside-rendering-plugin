@@ -34,14 +34,30 @@ async function getUI([results], req) {
     const isKeyEmpty = isObjectEmpty(results);
     const pathEntity = req.query.SELECT.from.ref[0].id;
     const entity = pathEntity.substring(pathEntity.indexOf(".") + 1);
+    const entityDefinition = req.query.SELECT.from.$refLinks[0].definition;
+
+    const expand = (rootEntity)=>{
+        let expand = [];
+        for(const relationship of ["associations","compositions"]){
+            for(const rel in entityDefinition[relationship]){
+                expand.push(rootEntity[rel](c => {
+                    c`.*`
+                }))
+            }
+        }
+        return expand;
+    }
 
     let fragment = `${entity}${isKeyEmpty ? "List" : "Detail"}`;
     let query = isKeyEmpty ? SELECT.from({ ref: [{ id: pathEntity }] }) : SELECT.from(req.query.SELECT.from).columns(b => {
-        b`.*`, b.to_author(c => {
-            c`.*`
-        })
+        b`.*`, expand(b)
     });
 
+    // let query = isKeyEmpty ? SELECT.from({ ref: [{ id: pathEntity }] }) : SELECT.from(req.query.SELECT.from).columns(b => {
+    //     b`.*`, b.to_author(c => {
+    //         c`.*`
+    //     })
+    // });
     const queryResult = await query;
 
     let templateData = {};

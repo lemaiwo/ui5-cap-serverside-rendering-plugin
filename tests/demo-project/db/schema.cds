@@ -9,7 +9,7 @@ entity Books@(ServerSideRenderingType:'view'):ServerSideRendering {
   to_author: Association to Authors;
 }
 
-entity Authors@(ServerSideRenderingType:'view'):ServerSideRendering {
+entity Authors {
   key ID : Integer;
   name  : String;
 }
