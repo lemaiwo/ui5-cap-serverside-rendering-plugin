@@ -1,36 +1,99 @@
-<mvc:View controllerName="be.wl.serversiderendering.controller.Main"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-	xmlns:l="sap.ui.layout"
-	xmlns:f="sap.ui.layout.form"
-    xmlns:core="sap.ui.core"
-    xmlns="sap.m">
-    <Page id="listpage" title="{i18n>title}">
-        <content>
-            <f:SimpleForm         editable="true"
-                layout="ResponsiveGridLayout"
-                title="Book"
-                labelSpanXL="3"
-                labelSpanL="3"
-                labelSpanM="3"
-                labelSpanS="12"
-                adjustLabelSpan="false"
-                emptySpanXL="4"
-                emptySpanL="4"
-                emptySpanM="4"
-                emptySpanS="0"
-                columnsXL="1"
-                columnsL="1"
-                columnsM="1"
-                singleContainerFullSize="false" >
-                <f:content>
-                    <Label text="ID" />
-                    <Input value="{{ID}}" />
-                    <Label text="Title" />
-                    <Input value="{{title}}" />
-                    <Label text="Author" />
-                    <Input value="{{author}}"/>
-                </f:content>
-            </f:SimpleForm>
-        </content>
-    </Page>
+<mvc:View xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.uxap"
+	xmlns:layout="sap.ui.layout"
+	xmlns:m="sap.m"
+    xmlns:f="sap.ui.layout.form"
+	xmlns:goals="sap.uxap.sample.SharedBlocks.goals"
+	height="100%">
+	<ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" upperCaseAnchorBar="false">
+		<headerTitle>
+				<ObjectPageDynamicHeaderTitle>
+					<expandedHeading>
+						<m:Title text="{{title}}" wrapping="true"/>
+					</expandedHeading>
+
+					<snappedHeading>
+						<m:FlexBox fitContainer="true" alignItems="Center">
+							<m:Avatar src="sap-icon://picture" backgroundColor="Random" class="sapUiTinyMarginEnd"/>
+							<m:Title text="{{title}}" wrapping="true" />
+						</m:FlexBox>
+					</snappedHeading>
+				</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+		<sections>
+			<ObjectPageSection titleUppercase="false" title="Basic Details">
+				<subSections>
+					<ObjectPageSubSection title="Basic Details" titleUppercase="false">
+						<blocks>
+							<ObjectPageLazyLoader>
+								<m:VBox class="sapUiSmallMargin">
+									<f:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="3"
+                                        labelSpanL="3"
+                                        labelSpanM="3"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="4"
+                                        emptySpanL="4"
+                                        emptySpanM="4"
+                                        emptySpanS="0"
+                                        columnsXL="1"
+                                        columnsL="1"
+                                        columnsM="1"
+                                        singleContainerFullSize="false" >
+                                            <f:content>
+                                                <m:Label text="ID" />
+                                                <m:Input value="{{ID}}" />
+                                                <m:Label text="Title" />
+                                                <m:Input value="{{title}}" />
+                                                <m:Label text="Stock" />
+                                                <m:Input value="{{stock}}"/>
+                                            </f:content>
+									</f:SimpleForm>
+								</m:VBox>
+							</ObjectPageLazyLoader>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+            <ObjectPageSection titleUppercase="false" title="Author">
+				<subSections>
+					<ObjectPageSubSection title="Author" titleUppercase="false">
+						<blocks>
+							<ObjectPageLazyLoader stashed="false">
+								<m:VBox class="sapUiSmallMargin">
+									<f:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="3"
+                                        labelSpanL="3"
+                                        labelSpanM="3"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="4"
+                                        emptySpanL="4"
+                                        emptySpanM="4"
+                                        emptySpanS="0"
+                                        columnsXL="1"
+                                        columnsL="1"
+                                        columnsM="1"
+                                        singleContainerFullSize="false" >
+                                            <f:content>
+                                                <m:Label text="ID" />
+                                                <m:Input value="{{to_author/ID}}" />
+                                                <m:Label text="Name" />
+                                                <m:Input value="{{to_author/name}}" />
+                                            </f:content>
+									</f:SimpleForm>
+								</m:VBox>
+							</ObjectPageLazyLoader>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+		</sections>
+	</ObjectPageLayout>
 </mvc:View>

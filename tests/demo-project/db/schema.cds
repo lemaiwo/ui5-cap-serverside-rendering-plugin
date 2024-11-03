@@ -6,4 +6,10 @@ entity Books@(ServerSideRenderingType:'view'):ServerSideRendering {
   key ID : Integer;
   title  : String;
   stock  : Integer;
+  to_author: Association to Authors;
+}
+
+entity Authors@(ServerSideRenderingType:'view'):ServerSideRendering {
+  key ID : Integer;
+  name  : String;
 }
