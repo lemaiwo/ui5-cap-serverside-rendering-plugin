@@ -36,17 +36,21 @@ async function getUI([results], req) {
     const entity = pathEntity.substring(pathEntity.indexOf(".") + 1);
 
     let fragment = `${entity}${isKeyEmpty ? "List" : "Detail"}`;
-    let query = isKeyEmpty? SELECT.from({ref:[{id:pathEntity}]}) :  SELECT.from(req.query.SELECT.from);
+    let query = isKeyEmpty ? SELECT.from({ ref: [{ id: pathEntity }] }) : SELECT.from(req.query.SELECT.from).columns(b => {
+        b`.*`, b.to_author(c => {
+            c`.*`
+        })
+    });
+
     const queryResult = await query;
 
-
     let templateData = {};
-    isKeyEmpty ? (templateData[entity] = queryResult):([templateData] = queryResult);
+    isKeyEmpty ? (templateData[entity] = queryResult) : ([templateData] = queryResult);
 
-    let type = req.query.SELECT.from.$refLinks[0].definition["@ServerSideRenderingType"] ||"view";
+    let type = req.query.SELECT.from.$refLinks[0].definition["@ServerSideRenderingType"] || "view";
     !validTypes.has(type) && (type = "view");
 
-    const filedata = fs.readFileSync(path.join(globalcds.root,`./srv/${type}s`, `${fragment}.${type}.xml`));
+    const filedata = fs.readFileSync(path.join(globalcds.root, `./srv/${type}s`, `${fragment}.${type}.xml`));
     const template = Handlebars.compile(filedata.toString());
     const result = template(templateData);
     const readableInstanceStream = new Readable({
@@ -57,10 +61,10 @@ async function getUI([results], req) {
     });
     req._.res.setHeader('Content-disposition', `attachment; ${fragment}.fragment.xml`);
     req._.res.setHeader('Content-type', 'application/xml');
-    
+
     if (results) {
         results.content = readableInstanceStream;
-    }else{
-        req.results = {ID:0,content:readableInstanceStream};
+    } else {
+        req.results = { ID: 0, content: readableInstanceStream };
     }
 }

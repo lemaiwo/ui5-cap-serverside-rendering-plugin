@@ -13,8 +13,7 @@
                 {{#each Books}}
                     <StandardListItem
                         type="Active"
-                        title="{{title}} - {{ID}}"
-                        description="{{author}}">
+                        title="{{title}} - {{ID}}">
                         <customData>
                             <core:CustomData key="ID" value="{{ID}}" writeToDom="true" />
                         </customData>
