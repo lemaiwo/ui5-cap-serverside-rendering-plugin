@@ -53,11 +53,6 @@ async function getUI([results], req) {
         b`.*`, expand(b)
     });
 
-    // let query = isKeyEmpty ? SELECT.from({ ref: [{ id: pathEntity }] }) : SELECT.from(req.query.SELECT.from).columns(b => {
-    //     b`.*`, b.to_author(c => {
-    //         c`.*`
-    //     })
-    // });
     const queryResult = await query;
 
     let templateData = {};
