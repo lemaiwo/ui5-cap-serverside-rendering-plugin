@@ -48,7 +48,7 @@ async function getUI([results], req) {
         return expand;
     }
 
-    let fragment = `${entity}${isKeyEmpty ? "List" : "Detail"}`;
+    let fragment =  entityDefinition["@ServerSideRenderingName"] || entityDefinition["@SSRName"] || (`${entity}${isKeyEmpty ? "List" : "Detail"}`);
     let query = isKeyEmpty ? SELECT.from({ ref: [{ id: pathEntity }] }) : SELECT.from(req.query.SELECT.from).columns(b => {
         b`.*`, expand(b)
     });
@@ -58,7 +58,7 @@ async function getUI([results], req) {
     let templateData = {};
     isKeyEmpty ? (templateData[entity] = queryResult) : ([templateData] = queryResult);
 
-    let type = req.query.SELECT.from.$refLinks[0].definition["@ServerSideRenderingType"] || "view";
+    let type = entityDefinition["@ServerSideRenderingType"] || entityDefinition["@SSRType"]  || "view";
     !validTypes.has(type) && (type = "view");
 
     const filedata = fs.readFileSync(path.join(globalcds.root, `./srv/${type}s`, `${fragment}.${type}.xml`));
