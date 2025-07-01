@@ -4,10 +4,10 @@ const path = require("path")
 const { createApp } = require("./app/vuejs/app.js")
 const { renderToString } = require("vue/server-renderer")
 
-cds.once("bootstrap", (_app) => {
-  _app.get("/vue-ssr", async (req, res) => {
-    const app = await createApp()
-    const html = await renderToString(app)
+cds.once("bootstrap", (server) => {
+  server.get("/vue-ssr", async (req, res) => {
+    const vueComponent = await createApp()
+    const html = await renderToString(vueComponent)
     
     const templatePath = path.join(__dirname, "app", "vuejs", "template.html")
     const template = fs.readFileSync(templatePath, "utf-8")
