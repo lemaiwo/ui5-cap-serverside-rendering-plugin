@@ -2,7 +2,6 @@ const cds = require("@sap/cds")
 const { createApp } = require("./app/vuejs/app.js")
 const { renderToString } = require("vue/server-renderer")
 
-// react on bootstrapping events...
 cds.once("bootstrap", (_app) => {
   _app.get("/vue-ssr", async (req, res) => {
     const app = await createApp()
