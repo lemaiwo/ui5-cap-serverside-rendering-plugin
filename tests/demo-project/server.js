@@ -4,11 +4,10 @@ const { renderToString } = require("vue/server-renderer")
 
 // react on bootstrapping events...
 cds.once("bootstrap", (_app) => {
-  _app.get("/vue-ssr", (req, res) => {
-    const app = createApp()
-
-    renderToString(app).then((html) => {
-      res.send(`
+  _app.get("/vue-ssr", async (req, res) => {
+    const app = await createApp()
+    const html = await renderToString(app)
+    res.send(`
     <!DOCTYPE html>
     <html>
       <head>
@@ -21,13 +20,13 @@ cds.once("bootstrap", (_app) => {
           }
         </script>
         <script type="module" src="/vuejs/client.js"></script>
+
       </head>
       <body>
         <div id="app">${html}</div>
       </body>
     </html>
     `)
-    })
   })
 })
 
