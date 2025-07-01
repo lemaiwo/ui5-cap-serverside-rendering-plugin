@@ -10,9 +10,9 @@ export async function createApp() {
 
     template: `<table id="books" class="hovering">
         <thead>
-            <th> Book </th>
-            <th> Author </th>
-            <th> Stock </th>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Stock</th>
         </thead>
         <tr v-for="book in list" v-bind:id="book.ID">
             <td>{{ book.title }}</td>
