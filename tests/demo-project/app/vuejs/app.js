@@ -1,4 +1,4 @@
-import { createSSRApp } from "vue"
+import { createSSRApp, reactive, provide, inject } from "vue"
 // import fs from "fs"
 // import path from "path"
 // import { fileURLToPath } from "url"
@@ -14,60 +14,72 @@ function inspect(event) {
   // this.book = this.list.find((b) => b.ID === bookId)
 }
 
-export async function createApp() {
-  // On the server, fetch from local endpoint; on client, fetch from relative URL
-  let data = []
-  if (typeof window === "undefined") {
-    // SSR: fetch from CAP service (localhost or env)
-    data = await fetchData()
-  } else {
-    // Client: fetch from same origin
-    const res = await fetch("/odata/v4/catalog/Books?$expand=to_author")
-    data = (await res.json()).value
-      // data = data.value || data
-      // data = data
-      .map((b) => ({
-        ...b,
-        author: b.to_author || { name: "" }
-      }))
-  }
+// typeof window === "undefined" ? (global.__INITIAL_STATE__ = []) : (window.__INITIAL_STATE__ = [])
 
+// Simple store using Vue's provide/inject
+const store = reactive({
+  list: [],
+  book: null
+})
+
+export async function createApp() {
   const books = createSSRApp({
-    data: () => ({
-      list: data,
-      book: null
-    }),
+    template: `
+      <Suspense>
+        <template #default>
+          <BookTable />
+        </template>
+        <template #fallback>
+          <div>Loading...</div>
+        </template>
+      </Suspense>
+    `
+  })
+
+  books.component("BookTable", {
+    async setup() {
+      let initialData = []
+      if (typeof window === "undefined") {
+        initialData = await fetchData()
+        global.__INITIAL_STATE__ = initialData
+      } else {
+        initialData = window.__INITIAL_STATE__ || []
+      }
+      store.list = initialData
+      provide("store", store)
+      return { store }
+    },
     methods: {
       selectBook(event, book) {
-        this.book = book
+        this.store.book = book
       }
     },
     template: `
-    <table id="books" class="hovering">
-      <thead>
-        <tr>
-          <th>Book</th>
-          <th>Author</th>
-          <th>Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-once v-for="book in list" :key="book.ID" @click="selectBook($event, book)">
-          <td>{{ book.title }}</td>
-          <td>{{ book.author.name }}</td>
-          <td>{{ book.stock }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="book">
-      <h3>Details</h3>
-      <p><strong>{{ book.title }}</strong> by {{ book.author.name }}</p>
-      <p>{{ book.description }}</p>
-      <button @click="book = null">Close</button>
-    </div>
-    <div v-else>
-      <em>(Click on a row to see details...)</em>
-    </div>
+      <table id="books" class="hovering">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="book in store.list" :key="book.ID" @click="selectBook($event, book)">
+            <td>{{ book.title }}</td>
+            <td>{{ book.author.name }}</td>
+            <td>{{ book.stock }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="store.book">
+        <h3>Details</h3>
+        <p><strong>{{ store.book.title }}</strong> by {{ store.book.author.name }}</p>
+        <p>{{ store.book.description }}</p>
+        <button @click="store.book = null">Close</button>
+      </div>
+      <div v-else>
+        <em>(Click on a row to see details...)</em>
+      </div>
     `
   })
   return books

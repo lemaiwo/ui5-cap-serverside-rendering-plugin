@@ -21,8 +21,11 @@
     <script type="module" src="/vuejs/client.js"></script>
 </head>
 
-<body>
+<body class="small-container", style="margin-top: 70px;">
     <div id="app">{{APP_HTML}}</div>
+    <script>
+      window.__INITIAL_STATE__ = '{{APP_STATE}}'
+    </script>
 </body>
 
 </html>
