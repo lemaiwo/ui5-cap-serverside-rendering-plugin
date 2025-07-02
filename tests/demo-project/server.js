@@ -17,7 +17,7 @@ cds.once("bootstrap", (server) => {
     const template = fs
       .readFileSync(templatePath, "utf-8")
       .replace("{{APP_HTML}}", html)
-      .replace("'{{APP_STATE}}'", JSON.stringify(state))
+      .replace("'{{APP_STATE}}'", JSON.stringify(state)) // hacky-hack data store
 
     res.send(template)
   })
