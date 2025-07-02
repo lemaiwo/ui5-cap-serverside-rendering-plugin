@@ -25,13 +25,15 @@
       color: black;
     }
   </style>
+  <!-- set the src of the client-side SSR Vue app relative 
+   to the "app" directory served by CAP -->
   <script type="module" src="/vuejs/client.js"></script>
 </head>
 
 <body class="small-container" , style="margin-top: 70px;">
-  <div id="app">{{APP_HTML}}</div>
+  <div id="app">{{APP_HTML}}</div> <!-- APP_HTML is mandatory -->
   <script>
-    window.__INITIAL_STATE__ = '{{APP_STATE}}'
+    window.__INITIAL_STATE__ = '{{APP_STATE}}' //> REVISIT
   </script>
 </body>
 
