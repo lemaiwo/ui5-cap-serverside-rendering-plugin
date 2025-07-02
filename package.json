@@ -3,7 +3,7 @@
   "version": "1.0.7",
   "description": "CAP Plugin to enable server side rendering in UI5",
   "main": "cds-plugin.js",
-  "homepage":"https://github.com/lemaiwo/ui5-cap-serverside-rendering-plugin",
+  "homepage": "https://github.com/lemaiwo/ui5-cap-serverside-rendering-plugin",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,7 +23,8 @@
   "author": "Wouter Lemaire",
   "license": "MIT",
   "dependencies": {
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "vue": "^3.5.17"
   },
   "devDependencies": {
     "@sap/cds": "^8.3.1",
