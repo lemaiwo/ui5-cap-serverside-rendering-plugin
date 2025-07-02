@@ -7,6 +7,7 @@ entity Books@(ServerSideRenderingType:'view',ServerSideRenderingName:'DemoList')
   title  : String;
   stock  : Integer;
   to_author: Association to Authors;
+  description : String;
 }
 
 entity Authors {
