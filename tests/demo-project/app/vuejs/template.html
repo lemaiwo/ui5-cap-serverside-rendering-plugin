@@ -2,30 +2,37 @@
 <html>
 
 <head>
-    <title>CAP - Vue SSR Example</title>
-    <link rel="stylesheet" href="https://unpkg.com/primitive-ui/dist/css/main.css">
-    <script type="importmap">
+  <title>CAP - Vue SSR Example</title>
+  <link rel="stylesheet" href="https://unpkg.com/primitive-ui/dist/css/main.css">
+  <script type="importmap">
       {
         "imports": {
           "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
         }
       }
     </script>
-    <style>
-        .hovering tr:hover td {
-            color: cyan;
-            background: #123;
-            cursor: pointer;
-        }
-    </style>
-    <script type="module" src="/vuejs/client.js"></script>
+  <style>
+    .hovering tr:hover td,
+    button:hover {
+      color: cyan;
+      background: #123;
+      cursor: pointer;
+    }
+
+    button {
+      border: 1px solid black;
+      background: whitesmoke;
+      color: black;
+    }
+  </style>
+  <script type="module" src="/vuejs/client.js"></script>
 </head>
 
-<body class="small-container", style="margin-top: 70px;">
-    <div id="app">{{APP_HTML}}</div>
-    <script>
-      window.__INITIAL_STATE__ = '{{APP_STATE}}'
-    </script>
+<body class="small-container" , style="margin-top: 70px;">
+  <div id="app">{{APP_HTML}}</div>
+  <script>
+    window.__INITIAL_STATE__ = '{{APP_STATE}}'
+  </script>
 </body>
 
 </html>
