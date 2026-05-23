@@ -1,6 +1,6 @@
 {
   "name": "ui5-cap-serverside-rendering-plugin",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "CAP Plugin to enable server side rendering in UI5",
   "main": "cds-plugin.js",
   "homepage": "https://github.com/lemaiwo/ui5-cap-serverside-rendering-plugin",
@@ -23,6 +23,8 @@
   "author": "Wouter Lemaire",
   "license": "MIT",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.57.0",
+    "dotenv": "^17.2.2",
     "handlebars": "^4.7.8",
     "vue": "^3.5.17"
   },

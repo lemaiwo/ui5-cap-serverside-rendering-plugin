@@ -4,9 +4,10 @@ using {ServerSideRendering} from 'ui5-cap-serverside-rendering-plugin';
 
 entity Books @(
   ServerSideRenderingType: 'view',
-  ServerSideRenderingName: 'DemoList',
-  VueTemplate: 'vuejs/template.html', // relative to "app" folder
-  VueApp: 'vuejs/app.js' // relative to "app" folder
+  ServerSideRenderingController: 'be.wl.serversiderendering.controller.Main',
+  // ServerSideRenderingName: 'DemoList',
+  // VueTemplate: 'vuejs/template.html', // relative to "app" folder
+  // VueApp: 'vuejs/app.js' // relative to "app" folder
 ) : ServerSideRendering {
   key ID          : Integer;
       title       : String;

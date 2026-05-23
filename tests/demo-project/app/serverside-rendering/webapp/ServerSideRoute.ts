@@ -99,7 +99,8 @@ export default class ServerSideRoute extends Route {
 		let url = oConfig.url;
 		for(const arg in oArguments)  url = url.replaceAll(`{${arg}}`,oArguments[arg])
 		const response = await fetch(url);
-		const result = await response.text()
+		let result = await response.text();
+		result = result.replaceAll("\n","");
 		const createView = new Promise<View>((resolve,reject)=>this.owner.runAsOwner(async () => {
 			const view = await View.create({
 				type: 'XML',

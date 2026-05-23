@@ -20,7 +20,7 @@ export default class Main extends Controller {
     /*eslint-disable @typescript-eslint/no-empty-function*/
     public onInit() {
     }
-    public onSelectedBook(event:ListBase$SelectionChangeEvent){
+    public onSelectedBooks(event:ListBase$SelectionChangeEvent){
         const bookID = event.getParameter("listItem")?.getCustomData().find(customData => customData.getKey() === "ID")?.getValue();
         this.getRouter().navTo("detail", { "id": bookID });
     }
