@@ -4,8 +4,8 @@ metadata:
 type: application
 server:
   customMiddleware:
-    - name: fiori-tools-appreload
-      afterMiddleware: compression
+#     - name: fiori-tools-appreload
+#       afterMiddleware: compression
     - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:

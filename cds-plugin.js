@@ -80,6 +80,38 @@ function sanitizeAIResponse(text) {
   return cleaned.substring(first, last + 1)
 }
 
+// Cheap well-formedness gate for AI output. The model intermittently emits a
+// broken root (e.g. two <mvc:View> opening tags but one close, or a duplicated
+// xmlns attribute), which sanitizeAIResponse can't detect and which only blows
+// up later in the browser as "still inside the root element". We check tag
+// balance, a single root, and no duplicate attributes before trusting the XML.
+function isWellFormedXml(xml) {
+  if (!xml) return false
+  const stripped = xml
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<!\[CDATA\[[\s\S]*?\]\]>/g, "")
+  const tagRe = /<\/?([a-zA-Z_][\w.:-]*)((?:[^">]|"[^"]*")*)>/g
+  const stack = []
+  let rootClosed = false
+  let match
+  while ((match = tagRe.exec(stripped))) {
+    const [full, name, attrs] = match
+    if (full.startsWith("</")) {
+      if (stack.pop() !== name) return false
+    } else if (full.endsWith("/>")) {
+      if (stack.length === 0 && rootClosed) return false // second root
+    } else {
+      if (stack.length === 0 && rootClosed) return false // second root
+      const attrSection = attrs.replace(/"[^"]*"/g, '""')
+      const attrNames = (attrSection.match(/[\w.:-]+\s*=/g) || []).map(a => a.replace(/\s*=$/, ""))
+      if (new Set(attrNames).size !== attrNames.length) return false // duplicate attribute
+      stack.push(name)
+    }
+    if (stack.length === 0) rootClosed = true
+  }
+  return stack.length === 0 && rootClosed
+}
+
 function buildPrompt({ entity, props, keys, mode, controllerName }) {
   const controllerInstruction = controllerName
     ? `Add controllerName="${controllerName}" to the root mvc:View element so event handlers resolve. `
@@ -88,6 +120,9 @@ function buildPrompt({ entity, props, keys, mode, controllerName }) {
     `IMPORTANT: the data is rendered server-side via Handlebars before UI5 ever sees the XML. ` +
     `Do NOT use any UI5 data binding syntax. Do not set items="{/...}", do not set value="{...}", do not set text="{...}", ` +
     `and do not declare any model paths. The only braces in the output must be Handlebars expressions like {{property}} or {{#each ...}}. `
+  const singleRootInstruction =
+    `Output exactly ONE root <mvc:View> element that wraps everything, and make sure it is properly closed with a matching </mvc:View>. ` +
+    `Do NOT repeat, nest, or duplicate the root <mvc:View> element, and declare each xmlns namespace attribute at most once on it. `
   if (mode === "list") {
     const customDataXml = keys.length
       ? keys.map(k => `<core:CustomData key="${k}" value="{{${k}}}" writeToDom="true" />`).join(" ")
@@ -96,6 +131,7 @@ function buildPrompt({ entity, props, keys, mode, controllerName }) {
       `Declare the xmlns:core="sap.ui.core" namespace on the root element. ` +
       controllerInstruction +
       noBindingInstruction +
+      singleRootInstruction +
       `Use a sap.m.List with mode="SingleSelectMaster" and selectionChange="onSelected${entity}" so a row can be selected. ` +
       `Do NOT set an items aggregation binding on the List — the items must be produced by a Handlebars {{#each ${entity}}} ` +
       `loop placed directly inside the <List> element, iterating the collection and emitting one StandardListItem per record. ` +
@@ -110,11 +146,38 @@ function buildPrompt({ entity, props, keys, mode, controllerName }) {
     `with the properties ${props}. ` +
     controllerInstruction +
     noBindingInstruction +
+    singleRootInstruction +
     `For each property, render an appropriate input control (Input for strings, StepInput for integers/numbers, ` +
     `DatePicker for dates, CheckBox for booleans) and a matching Label. ` +
     `Use Handlebars syntax like value="{{property}}" so existing values are prefilled. ` +
     `Wrap the form in a Page that has a Save Button in the footer. ` +
     `Return only the raw XML as plain text, without code fences, comments, or commentary.`
+}
+
+const MAX_AI_ATTEMPTS = 2
+
+// Ask Claude for a template and only return XML that is complete and well-formed.
+// The model occasionally truncates (stop_reason "max_tokens") or emits a broken
+// root; both are retried, and anything still bad returns null so the caller can
+// fall back to disk instead of caching a broken template.
+async function requestAITemplate({ entity, props, keys, mode, controllerName, cacheKey }) {
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  const prompt = buildPrompt({ entity, props, keys, mode, controllerName })
+  for (let attempt = 1; attempt <= MAX_AI_ATTEMPTS; attempt++) {
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 8192,
+      messages: [{ role: 'user', content: prompt }]
+    })
+    if (response?.stop_reason === "max_tokens") {
+      console.warn(`Claude response for ${cacheKey} was truncated (max_tokens), attempt ${attempt}/${MAX_AI_ATTEMPTS}.`)
+      continue
+    }
+    const xml = sanitizeAIResponse(response?.content?.[0]?.text)
+    if (xml && isWellFormedXml(xml)) return xml
+    console.warn(`Claude returned malformed XML for ${cacheKey}, attempt ${attempt}/${MAX_AI_ATTEMPTS}.`)
+  }
+  return null
 }
 
 async function generateTemplate({ entity, props, keys, mode, fragment, type, controllerName }) {
@@ -125,14 +188,8 @@ async function generateTemplate({ entity, props, keys, mode, fragment, type, con
 
   if (process.env.ANTHROPIC_API_KEY) {
     try {
-      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-      const response = await anthropic.messages.create({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 5024,
-        messages: [{ role: 'user', content: buildPrompt({ entity, props, keys, mode, controllerName }) }]
-      })
-      xml = sanitizeAIResponse(response?.content?.[0]?.text)
-      if (!xml) console.warn(`Claude returned no usable XML for ${cacheKey}, falling back to disk.`)
+      xml = await requestAITemplate({ entity, props, keys, mode, controllerName, cacheKey })
+      if (!xml) console.warn(`No usable AI XML for ${cacheKey}, falling back to disk.`)
     } catch (err) {
       console.error(`Claude AI request failed for ${cacheKey}, falling back to disk:`, err.message)
     }
